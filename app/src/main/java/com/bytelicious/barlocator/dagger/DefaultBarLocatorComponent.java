@@ -1,5 +1,7 @@
 package com.bytelicious.barlocator.dagger;
 
+import android.content.Context;
+
 import com.bytelicious.barlocator.base.BarLocatorApplication;
 import com.bytelicious.barlocator.managers.BarLocationManager;
 import com.bytelicious.barlocator.networking.API;
@@ -25,12 +27,12 @@ public class DefaultBarLocatorComponent {
     public static BarLocatorComponent create(BarLocatorApplication app) {
         return DaggerBarLocatorComponent
                 .builder()
-                .locationModule(new LocationModule(new BarLocationManager(app)))
-                .aPIModule(createAPIModule())
+                .managerModule(new ManagerModule())
+                .aPIModule(createAPIModule(app))
                 .build();
     }
 
-    private static APIModule createAPIModule() {
+    private static APIModule createAPIModule(Context app) {
 
         OkHttpClient client = new OkHttpClient.Builder()
                 .retryOnConnectionFailure(true)
@@ -52,7 +54,7 @@ public class DefaultBarLocatorComponent {
                 .build();
 
         API api = retrofit.create(API.class);
-        return new APIModule(api, client, gson, retrofit);
+        return new APIModule(app, api, client, gson, retrofit);
     }
 
 }

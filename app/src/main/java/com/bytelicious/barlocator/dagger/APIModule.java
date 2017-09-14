@@ -1,5 +1,7 @@
 package com.bytelicious.barlocator.dagger;
 
+import android.content.Context;
+
 import com.bytelicious.barlocator.networking.API;
 import com.google.gson.Gson;
 
@@ -19,9 +21,11 @@ public class APIModule {
     private OkHttpClient okHttpClient;
     private Retrofit retrofit;
     private API restClient;
+    private Context app;
     private Gson gson;
 
-    public APIModule(API restClient, OkHttpClient okHttpClient, Gson gson, Retrofit retrofit) {
+    public APIModule(Context app, API restClient, OkHttpClient okHttpClient, Gson gson, Retrofit retrofit) {
+        this.app = app;
         this.gson = gson;
         this.retrofit = retrofit;
         this.restClient = restClient;
@@ -50,6 +54,12 @@ public class APIModule {
     @Singleton
     Retrofit provideRetrofit() {
         return retrofit;
+    }
+
+    @Provides
+    @Singleton
+    Context provideContext() {
+        return app;
     }
 
 }

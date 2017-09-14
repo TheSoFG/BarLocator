@@ -11,15 +11,15 @@ import com.bytelicious.barlocator.map.BarMapFragment;
  * @author ylyubenov
  */
 
-public class BarPagerAdapter extends FragmentStatePagerAdapter {
+class BarPagerAdapter extends FragmentStatePagerAdapter {
 
     private BarListFragment barListFragment;
     private BarMapFragment barMapFragment;
 
-    public static final int LIST = 0;
-    public static final int MAP = 1;
+    static final int LIST = 0;
+    static final int MAP = 1;
 
-    public BarPagerAdapter(FragmentManager fm) {
+    BarPagerAdapter(FragmentManager fm) {
         super(fm);
         barListFragment = BarListFragment.newInstance();
         barMapFragment = BarMapFragment.newInstance();

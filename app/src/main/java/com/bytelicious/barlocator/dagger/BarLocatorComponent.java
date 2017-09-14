@@ -10,7 +10,7 @@ import dagger.Component;
  * @author ylyubenov
  */
 
-@Component(modules = {APIModule.class, LocationModule.class})
+@Component(modules = {APIModule.class, ManagerModule.class})
 @Singleton
 public interface BarLocatorComponent {
 

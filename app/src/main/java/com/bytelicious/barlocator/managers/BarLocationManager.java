@@ -11,6 +11,8 @@ import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 
+import javax.inject.Inject;
+
 /**
  * @author ylyubenov
  */
@@ -27,7 +29,6 @@ public class BarLocationManager implements GoogleApiClient.OnConnectionFailedLis
     private LocationRequest locationRequest;
 
     private ConnectionListener connectionListener;
-    private Bundle bundle;
 
     public interface ConnectionListener {
         void onConnectionFailed(@NonNull ConnectionResult connectionResult);
@@ -39,6 +40,7 @@ public class BarLocationManager implements GoogleApiClient.OnConnectionFailedLis
         void onLocationChanged(Location location);
     }
 
+    @Inject
     public BarLocationManager(Context app) {
         this.app = app;
         createLocationRequest();
@@ -63,7 +65,6 @@ public class BarLocationManager implements GoogleApiClient.OnConnectionFailedLis
 
     @Override
     public void onConnected(Bundle bundle) {
-        this.bundle = bundle;
         if (connectionListener != null) {
             connectionListener.onConnected(bundle);
         }
