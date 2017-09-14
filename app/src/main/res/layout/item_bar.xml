@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<android.support.v7.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="@dimen/small_margin"
+    android:layout_marginEnd="@dimen/standard_margin"
+    android:layout_marginStart="@dimen/standard_margin"
+    android:layout_marginTop="@dimen/small_margin">
+
+    <RelativeLayout
+        android:id="@+id/bar_item_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/standard_padding">
+
+        <TextView
+            android:id="@+id/name_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingBottom="@dimen/standard_padding"
+            tools:text="Bar Friday"/>
+
+        <TextView
+            android:id="@+id/distance_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/name_text_view"
+            tools:text="100m"/>
+
+    </RelativeLayout>
+
+
+</android.support.v7.widget.CardView>
