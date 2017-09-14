@@ -2,12 +2,12 @@ package com.bytelicious.barlocator.map;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.bytelicious.barlocator.R;
-import com.bytelicious.barlocator.base.BarFragment;
 import com.bytelicious.barlocator.model.Bar;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -21,7 +21,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
  * @author ylyubenov
  */
 
-public class BarMapFragment extends BarFragment implements OnMapReadyCallback {
+public class BarMapFragment extends Fragment implements OnMapReadyCallback {
 
     public static final String TITLE = "Bar Map";
     private static final String SELECTED_BAR = "BarMapFragment.bar";

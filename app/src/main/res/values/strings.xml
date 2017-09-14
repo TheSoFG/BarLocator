@@ -7,4 +7,8 @@
     <string name="error_network_lost">The connection is lost, try again later.</string>
     <string name="error_service_disconnected">Google service disconnected, try again later.</string>
     <string name="message_enable_location">To show bars enable location for the app</string>
+    <string name="error_google_client_connection">Location connection failed ($1%d)</string>
+    <string name="permission_needed_title">Location Permission Needed</string>
+    <string name="permission_needed_message">We cannot locate bars nearby without your current location.</string>
+    <string name="ok">OK</string>
 </resources>

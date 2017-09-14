@@ -7,7 +7,6 @@ import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
@@ -19,11 +18,8 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
-import android.widget.Toast;
 
-import com.bytelicious.barlocator.base.BarFragment;
 import com.bytelicious.barlocator.dagger.DI;
 import com.bytelicious.barlocator.list.BarListFragment;
 import com.bytelicious.barlocator.managers.BarLocationManager;
@@ -45,7 +41,6 @@ public class MainActivity extends AppCompatActivity implements BarLocationManage
         BarListFragment.OnBarSelectedListener,
         NetworkManager.OnBarsReadyListener {
 
-    private static final String TAG = MainActivity.class.getSimpleName();
     public static final int LOCATION_PERMISSION_REQUEST = 99;
     private static final int CONNECTION_FAILURE_RESOLUTION_REQUEST = 9001;
     private static final int DEFAULT_RADIUS = 500;
@@ -65,10 +60,8 @@ public class MainActivity extends AppCompatActivity implements BarLocationManage
         setupToolbar();
         setupViewPager();
 
-        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (!isLocationAllowed()) {
-                checkLocationPermission();
-            }
+        if (!isLocationAllowed()) {
+            checkLocationPermission();
         }
     }
 
@@ -98,14 +91,7 @@ public class MainActivity extends AppCompatActivity implements BarLocationManage
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     locationManager.requestLocation();
                 } else {
-                    Snackbar.make(viewPager, R.string.message_enable_location,
-                            Snackbar.LENGTH_INDEFINITE)
-                            .setAction(R.string.action_settings, new View.OnClickListener() {
-                                @Override
-                                public void onClick(View view) {
-                                    goToPermissions();
-                                }
-                            }).show();
+                    showResolutionSnackbar();
                 }
                 break;
             }
@@ -122,8 +108,10 @@ public class MainActivity extends AppCompatActivity implements BarLocationManage
                 e.printStackTrace();
             }
         } else {
-            Log.i(TAG, "Location services connection failed with code " +
-                    connectionResult.getErrorCode());
+            Snackbar.make(viewPager,
+                    String.format(getString(R.string.error_google_client_connection),
+                            connectionResult.getErrorCode()),
+                    Snackbar.LENGTH_LONG).show();
         }
     }
 
@@ -131,12 +119,12 @@ public class MainActivity extends AppCompatActivity implements BarLocationManage
     public void onConnectionSuspended(int i) {
         switch (i) {
             case CAUSE_NETWORK_LOST:
-                Toast.makeText(this, R.string.error_network_lost, Toast.LENGTH_SHORT).show();
+                Snackbar.make(viewPager, R.string.error_network_lost, Snackbar.LENGTH_SHORT).show();
                 break;
 
             case CAUSE_SERVICE_DISCONNECTED:
-                Toast.makeText(this, R.string.error_service_disconnected,
-                        Toast.LENGTH_SHORT).show();
+                Snackbar.make(viewPager, R.string.error_service_disconnected,
+                        Snackbar.LENGTH_SHORT).show();
                 break;
         }
     }
@@ -155,8 +143,7 @@ public class MainActivity extends AppCompatActivity implements BarLocationManage
 
     @Override
     public void onBarsFailure() {
-        Toast.makeText(MainActivity.this, R.string.error_could_not_load_bars,
-                Toast.LENGTH_LONG).show();
+        Snackbar.make(viewPager, R.string.error_could_not_load_bars, Snackbar.LENGTH_SHORT).show();
     }
 
     @Override
@@ -187,11 +174,10 @@ public class MainActivity extends AppCompatActivity implements BarLocationManage
     }
 
     private void showRationaleDialog() {
-        //TODO
         new AlertDialog.Builder(this)
-                .setTitle("Location Permission Needed")
-                .setMessage("We cannot locate bars nearby without your current location.")
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                .setTitle(R.string.permission_needed_title)
+                .setMessage(R.string.permission_needed_message)
+                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         ActivityCompat.requestPermissions(MainActivity.this,
@@ -213,8 +199,8 @@ public class MainActivity extends AppCompatActivity implements BarLocationManage
         // After screen rotation new instance of FragmentPagerAdapter is created.
         // But the ViewPager restores its state and state of all fragments it contains.
         // ViewPager doesn't call adapters getView() method.
-        if (f instanceof BarFragment) {
-            ((BarFragment) f).setBars(bars, location);
+        if (f instanceof BarListFragment) {
+            ((BarListFragment) f).setBars(bars, location);
         }
     }
 
@@ -234,5 +220,16 @@ public class MainActivity extends AppCompatActivity implements BarLocationManage
                 Uri.fromParts("package", getPackageName(), null));
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
+    }
+
+    private void showResolutionSnackbar() {
+        Snackbar.make(viewPager, R.string.message_enable_location,
+                Snackbar.LENGTH_INDEFINITE)
+                .setAction(R.string.action_settings, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        goToPermissions();
+                    }
+                }).show();
     }
 }

@@ -1,9 +1,9 @@
 package com.bytelicious.barlocator;
 
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
-import com.bytelicious.barlocator.base.BarFragment;
 import com.bytelicious.barlocator.list.BarListFragment;
 import com.bytelicious.barlocator.map.BarMapFragment;
 
@@ -26,7 +26,7 @@ class BarPagerAdapter extends FragmentStatePagerAdapter {
     }
 
     @Override
-    public BarFragment getItem(int position) {
+    public Fragment getItem(int position) {
         switch (position) {
             case 0:
                 return barListFragment;
