@@ -32,7 +32,7 @@ class BarListAdapter extends RecyclerView.Adapter<BarListAdapter.BarViewHolder> 
     }
 
     public interface OnBarItemClickedListener {
-        void onBarItemClicked(Bar bar);
+        void onBarItemClicked(String barId);
     }
 
     void setBars(ArrayList<Bar> bars, Location newLocation) {
@@ -89,7 +89,7 @@ class BarListAdapter extends RecyclerView.Adapter<BarListAdapter.BarViewHolder> 
                 @Override
                 public void onClick(View view) {
                     if (clickedListener != null) {
-                        clickedListener.onBarItemClicked(bar);
+                        clickedListener.onBarItemClicked(bar.getId());
                     }
                 }
             });

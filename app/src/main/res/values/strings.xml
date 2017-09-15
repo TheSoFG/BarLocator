@@ -11,5 +11,7 @@
     <string name="permission_needed_title">Location Permission Needed</string>
     <string name="permission_needed_message">We cannot locate bars nearby without your current location.</string>
     <string name="ok">OK</string>
-    <string name="your_position">Your position</string>
+    <string name="youre_here">You\'re here</string>
+    <string name="distance_meters">Radius in meters: %d m.</string>
+    <integer name="max_distance">50000</integer>
 </resources>

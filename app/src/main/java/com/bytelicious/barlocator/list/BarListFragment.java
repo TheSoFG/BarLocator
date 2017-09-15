@@ -32,7 +32,7 @@ public class BarListFragment extends BarFragment implements BarListAdapter.OnBar
     }
 
     public interface OnBarSelectedListener {
-        void onBarSelectedListener(Bar bar);
+        void onBarSelectedListener(String barId);
     }
 
     private OnBarSelectedListener onBarSelectedListener;
@@ -71,9 +71,9 @@ public class BarListFragment extends BarFragment implements BarListAdapter.OnBar
     }
 
     @Override
-    public void onBarItemClicked(Bar bar) {
+    public void onBarItemClicked(String barId) {
         if (onBarSelectedListener != null) {
-            onBarSelectedListener.onBarSelectedListener(bar);
+            onBarSelectedListener.onBarSelectedListener(barId);
         }
     }
 

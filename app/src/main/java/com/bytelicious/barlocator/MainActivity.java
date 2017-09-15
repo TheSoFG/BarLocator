@@ -19,6 +19,8 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.SeekBar;
+import android.widget.TextView;
 
 import com.bytelicious.barlocator.base.BarFragment;
 import com.bytelicious.barlocator.dagger.DI;
@@ -39,13 +41,14 @@ import static com.google.android.gms.common.api.GoogleApiClient.ConnectionCallba
 
 public class MainActivity extends AppCompatActivity implements BarLocationManager.ConnectionListener,
         BarListFragment.OnBarSelectedListener,
-        NetworkManager.OnBarsReadyListener {
+        NetworkManager.OnBarsReadyListener, SeekBar.OnSeekBarChangeListener, ViewPager.OnPageChangeListener {
 
     private static final int CONNECTION_FAILURE_RESOLUTION_REQUEST = 9001;
     private static final String ARG_LOCATION = "MainActivity.location";
+    private static final String ARG_RADIUS = "MainActivity.radius";
     private static final String ARG_BARS = "MainActivity.bars";
     public static final int LOCATION_PERMISSION_REQUEST = 99;
-    private static final int DEFAULT_RADIUS = 50000;
+    private static final int DEFAULT_RADIUS = 1000;
 
     private ViewPager viewPager;
 
@@ -55,6 +58,8 @@ public class MainActivity extends AppCompatActivity implements BarLocationManage
     BarLocationManager locationManager;
     private ArrayList<Bar> bars;
     private Location location;
+    private int radius = DEFAULT_RADIUS;
+    private TextView distanceTextView;
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
@@ -124,16 +129,45 @@ public class MainActivity extends AppCompatActivity implements BarLocationManage
 
     @Override
     public void onLocationChanged(final Location location) {
-        networkManager.getBars(location, DEFAULT_RADIUS, getString(R.string.web_api_key));
+        networkManager.getBars(location, radius, getString(R.string.web_api_key));
     }
 
     @Override
-    public void onBarSelectedListener(Bar bar) {
+    public void onBarSelectedListener(String barId) {
         viewPager.setCurrentItem(MAP);
         Fragment f = getSupportFragmentManager().getFragments().get(MAP);
         if (f instanceof BarMapFragment) {
-            ((BarMapFragment) f).onBarSelected(bar);
+            ((BarMapFragment) f).onBarSelected(barId);
         }
+    }
+
+    @Override
+    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+    }
+    @Override
+    public void onPageSelected(int position) {
+        deliverResultsToFragment(position);
+    }
+    @Override
+    public void onPageScrollStateChanged(int state) {
+
+    }
+
+    @Override
+    public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+        radius = i;
+        distanceTextView.setText(String.format(getString(R.string.distance_meters), radius));
+    }
+
+    @Override
+    public void onStartTrackingTouch(SeekBar seekBar) {
+
+    }
+
+    @Override
+    public void onStopTrackingTouch(SeekBar seekBar) {
+        networkManager.getBars(location, radius, getString(R.string.web_api_key));
     }
 
     @Override
@@ -143,11 +177,12 @@ public class MainActivity extends AppCompatActivity implements BarLocationManage
         setContentView(R.layout.activity_main);
         setupToolbar();
         setupViewPager();
+        restoreData(savedInstanceState);
+        setupDistanceSeekBar();
 
         if (!isLocationAllowed()) {
             checkLocationPermission();
         }
-        restoreData(savedInstanceState);
     }
 
     @Override
@@ -155,6 +190,7 @@ public class MainActivity extends AppCompatActivity implements BarLocationManage
         super.onSaveInstanceState(outState);
         outState.putParcelableArrayList(ARG_BARS, bars);
         outState.putParcelable(ARG_LOCATION, location);
+        outState.putInt(ARG_RADIUS, radius);
     }
 
     @Override
@@ -213,20 +249,7 @@ public class MainActivity extends AppCompatActivity implements BarLocationManage
         BarPagerAdapter barPagerAdapter = new BarPagerAdapter(getSupportFragmentManager());
         viewPager.setAdapter(barPagerAdapter);
 
-        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
-            }
-            @Override
-            public void onPageSelected(int position) {
-                deliverResultsToFragment(position);
-            }
-            @Override
-            public void onPageScrollStateChanged(int state) {
-
-            }
-        });
+        viewPager.addOnPageChangeListener(this);
     }
 
     private void deliverResultsToFragment(int position) {
@@ -237,6 +260,14 @@ public class MainActivity extends AppCompatActivity implements BarLocationManage
         if (f instanceof BarFragment) {
             ((BarFragment) f).setBars(bars, location);
         }
+    }
+
+    private void setupDistanceSeekBar() {
+        distanceTextView = findViewById(R.id.distance_text_view);
+        SeekBar seekBar = findViewById(R.id.distance_seek_bar);
+        seekBar.setOnSeekBarChangeListener(this);
+        seekBar.setProgress(radius);
+        distanceTextView.setText(String.format(getString(R.string.distance_meters), radius));
     }
 
     private void setupToolbar() {
@@ -264,9 +295,11 @@ public class MainActivity extends AppCompatActivity implements BarLocationManage
 
     private void restoreData(Bundle savedInstanceState) {
         if (savedInstanceState != null) {
-            this.location = savedInstanceState.getParcelable(ARG_LOCATION);
-            this.bars = savedInstanceState.getParcelableArrayList(ARG_BARS);
+            bars = savedInstanceState.getParcelableArrayList(ARG_BARS);
+            location = savedInstanceState.getParcelable(ARG_LOCATION);
+            radius = savedInstanceState.getInt(ARG_RADIUS);
             deliverResultsToFragment(viewPager.getCurrentItem());
         }
     }
+
 }

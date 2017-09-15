@@ -31,12 +31,12 @@ import static com.bytelicious.barlocator.Utils.DistanceBetween;
 public class BarMapFragment extends BarFragment implements OnMapReadyCallback {
 
     public static final String TITLE = "Bar Map";
-    private static final String SELECTED_BAR = "BarMapFragment.bar";
+    private static final String SELECTED_BAR = "BarMapFragment.barId";
     private static final int DEFAULT_PADDING = 100;
     private GoogleMap map;
 
     private static final int DEFAULT_ZOOM_LEVEL = 18;
-    private Bar bar;
+    private String barId;
 
     public static BarMapFragment newInstance() {
         return new BarMapFragment();
@@ -48,7 +48,7 @@ public class BarMapFragment extends BarFragment implements OnMapReadyCallback {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (savedInstanceState != null) {
-            bar = savedInstanceState.getParcelable(SELECTED_BAR);
+            barId = savedInstanceState.getString(SELECTED_BAR);
         }
     }
 
@@ -65,7 +65,7 @@ public class BarMapFragment extends BarFragment implements OnMapReadyCallback {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelable(SELECTED_BAR, bar);
+        outState.putString(SELECTED_BAR, barId);
     }
 
     @Override
@@ -78,16 +78,16 @@ public class BarMapFragment extends BarFragment implements OnMapReadyCallback {
     @Override
     public void onMapReady(GoogleMap googleMap) {
         map = googleMap;
-        if (bar != null) {
-            moveToBar(bar);
+        if (barId != null) {
+            moveToBar(barId);
         } else if (bars != null && bars.size() > 0) {
             resetMarkers();
         }
     }
 
-    public void onBarSelected(Bar bar) {
-        this.bar = bar;
-        moveToBar(bar);
+    public void onBarSelected(String barId) {
+        this.barId = barId;
+        moveToBar(barId);
     }
 
     @Override
@@ -114,17 +114,26 @@ public class BarMapFragment extends BarFragment implements OnMapReadyCallback {
 
     private void addUserPosition() {
         if (location != null) {
-            map.addMarker(new MarkerOptions()
+            Marker marker = map.addMarker(new MarkerOptions()
                     .position(new LatLng(location.getLatitude(), location.getLongitude()))
                     .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET))
-                    .title(getString(R.string.your_position)));
+                    .title(getString(R.string.youre_here)));
+            marker.showInfoWindow();
         }
     }
 
-    private void moveToBar(Bar bar) {
-        LatLng barPosition = new LatLng(bar.getGeometry().getLocation().getLat(),
-                bar.getGeometry().getLocation().getLng());
-        map.animateCamera(CameraUpdateFactory.newLatLngZoom(barPosition, DEFAULT_ZOOM_LEVEL));
+    private void moveToBar(String barId) {
+        Bar selectedBar = null;
+        for (Bar bar : bars) {
+            if (bar.getId().equals(barId)) {
+                selectedBar = bar;
+            }
+        }
+        if (selectedBar != null) {
+            LatLng barPosition = new LatLng(selectedBar.getGeometry().getLocation().getLat(),
+                    selectedBar.getGeometry().getLocation().getLng());
+            map.animateCamera(CameraUpdateFactory.newLatLngZoom(barPosition, DEFAULT_ZOOM_LEVEL));
+        }
     }
 
     private Marker addMarker(Bar bar) {
