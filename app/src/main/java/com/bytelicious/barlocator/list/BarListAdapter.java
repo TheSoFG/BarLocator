@@ -9,10 +9,11 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bytelicious.barlocator.R;
-import com.bytelicious.barlocator.Utils;
 import com.bytelicious.barlocator.model.Bar;
 
 import java.util.ArrayList;
+
+import static com.bytelicious.barlocator.Utils.DistanceBetween;
 
 /**
  * @author ylyubenov
@@ -35,13 +36,15 @@ class BarListAdapter extends RecyclerView.Adapter<BarListAdapter.BarViewHolder> 
     }
 
     void setBars(ArrayList<Bar> bars, Location newLocation) {
-        if (this.bars == null) {
-            this.bars = new ArrayList<>();
+        if (bars != null) {
+            if (this.bars == null) {
+                this.bars = new ArrayList<>();
+            }
+            this.bars.clear();
+            this.bars.addAll(bars);
+            this.location = newLocation;
+            notifyDataSetChanged();
         }
-        this.bars.clear();
-        this.bars.addAll(bars);
-        this.location = newLocation;
-        notifyDataSetChanged();
     }
 
     @Override
@@ -76,12 +79,9 @@ class BarListAdapter extends RecyclerView.Adapter<BarListAdapter.BarViewHolder> 
         void bind(final Bar bar) {
             nameTextView.setText(bar.getName());
             if (location != null) {
-                float[] results = new float[3];
-                Location.distanceBetween(location.getLatitude(), location.getLongitude(),
-                        bar.getGeometry().getLocation().getLat(),
-                        bar.getGeometry().getLocation().getLng(), results);
+                double distance = DistanceBetween(location, bar);
                 String baseString = distanceTextView.getContext().getString(R.string.bar_distance);
-                distanceTextView.setText(String.format(baseString, Utils.round(results[0], 2) + ""));
+                distanceTextView.setText(String.format(baseString, String.valueOf(distance)));
             } else {
                 distanceTextView.setText("");
             }

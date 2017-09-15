@@ -16,6 +16,7 @@ import java.util.ArrayList;
 public abstract class BarFragment extends Fragment {
 
     protected ArrayList<Bar> bars;
+    protected Location location;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -29,10 +30,13 @@ public abstract class BarFragment extends Fragment {
         } else {
             this.bars = new ArrayList<>();
         }
-        this.bars.addAll(bars);
+        if (bars != null) {
+            this.bars.addAll(bars);
+        }
     }
 
     public void setBars(ArrayList<Bar> bars, Location location) {
+        this.location = location;
         setBars(bars);
     }
 }

@@ -41,9 +41,11 @@ public class MainActivity extends AppCompatActivity implements BarLocationManage
         BarListFragment.OnBarSelectedListener,
         NetworkManager.OnBarsReadyListener {
 
-    public static final int LOCATION_PERMISSION_REQUEST = 99;
     private static final int CONNECTION_FAILURE_RESOLUTION_REQUEST = 9001;
-    private static final int DEFAULT_RADIUS = 500;
+    private static final String ARG_LOCATION = "MainActivity.location";
+    private static final String ARG_BARS = "MainActivity.bars";
+    public static final int LOCATION_PERMISSION_REQUEST = 99;
+    private static final int DEFAULT_RADIUS = 50000;
 
     private ViewPager viewPager;
 
@@ -53,36 +55,6 @@ public class MainActivity extends AppCompatActivity implements BarLocationManage
     BarLocationManager locationManager;
     private ArrayList<Bar> bars;
     private Location location;
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        DI.getInstance().inject(this);
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        setupToolbar();
-        setupViewPager();
-
-        if (!isLocationAllowed()) {
-            checkLocationPermission();
-        }
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        networkManager.setOnBarsReadyListener(this);
-        locationManager.setConnectionListener(this);
-        if (isLocationAllowed()) {
-            locationManager.requestLocation();
-        }
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        networkManager.setOnBarsReadyListener(null);
-        locationManager.setConnectionListener(null);
-    }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
@@ -162,6 +134,44 @@ public class MainActivity extends AppCompatActivity implements BarLocationManage
         if (f instanceof BarMapFragment) {
             ((BarMapFragment) f).onBarSelected(bar);
         }
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        DI.getInstance().inject(this);
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        setupToolbar();
+        setupViewPager();
+
+        if (!isLocationAllowed()) {
+            checkLocationPermission();
+        }
+        restoreData(savedInstanceState);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelableArrayList(ARG_BARS, bars);
+        outState.putParcelable(ARG_LOCATION, location);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        networkManager.setOnBarsReadyListener(this);
+        locationManager.setConnectionListener(this);
+        if (isLocationAllowed()) {
+            locationManager.requestLocation();
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        networkManager.setOnBarsReadyListener(null);
+        locationManager.setConnectionListener(null);
     }
 
     private void checkLocationPermission() {
@@ -250,5 +260,13 @@ public class MainActivity extends AppCompatActivity implements BarLocationManage
                         goToPermissions();
                     }
                 }).show();
+    }
+
+    private void restoreData(Bundle savedInstanceState) {
+        if (savedInstanceState != null) {
+            this.location = savedInstanceState.getParcelable(ARG_LOCATION);
+            this.bars = savedInstanceState.getParcelableArrayList(ARG_BARS);
+            deliverResultsToFragment(viewPager.getCurrentItem());
+        }
     }
 }

@@ -64,6 +64,7 @@ public class BarListFragment extends BarFragment implements BarListAdapter.OnBar
 
     @Override
     public void setBars(ArrayList<Bar> bars, Location location) {
+        super.setBars(bars, location);
         if (adapter != null) {
             adapter.setBars(bars, location);
         }
@@ -82,7 +83,7 @@ public class BarListFragment extends BarFragment implements BarListAdapter.OnBar
 
     private void setupRecyclerView() {
         adapter = new BarListAdapter();
-        adapter.setBars(bars, null);
+        adapter.setBars(bars, location);
         adapter.setClickedListener(this);
         barListRecyclerView.setAdapter(adapter);
         barListRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));

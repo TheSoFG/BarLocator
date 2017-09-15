@@ -79,13 +79,13 @@ public class BarLocationManager implements GoogleApiClient.OnConnectionFailedLis
     }
 
     public void requestLocation() throws SecurityException {
-        if (googleApiClient != null && googleApiClient.isConnected()) {
+        if (isConnected()) {
             location = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
             if (location == null) {
                 LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient,
                         locationRequest, this);
             } else {
-                if(connectionListener != null) {
+                if (connectionListener != null) {
                     connectionListener.onLocationChanged(location);
                 }
             }
@@ -98,6 +98,9 @@ public class BarLocationManager implements GoogleApiClient.OnConnectionFailedLis
 
     public void setConnectionListener(ConnectionListener connectionListener) {
         this.connectionListener = connectionListener;
+        if (connectionListener == null) {
+            LocationServices.FusedLocationApi.removeLocationUpdates(googleApiClient, this);
+        }
     }
 
     private void createGoogleClient() {
