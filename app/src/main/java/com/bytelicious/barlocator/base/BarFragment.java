@@ -10,7 +10,7 @@ import com.bytelicious.barlocator.model.Bar;
 import java.util.ArrayList;
 
 /**
- * @author ylybenov
+ * @author ylyubenov
  */
 
 public abstract class BarFragment extends Fragment {

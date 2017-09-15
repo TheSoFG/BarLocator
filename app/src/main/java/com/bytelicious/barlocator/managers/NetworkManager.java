@@ -16,7 +16,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 /**
- * @author ylybenov
+ * @author ylyubenov
  */
 
 public class NetworkManager {
