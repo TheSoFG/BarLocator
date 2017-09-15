@@ -22,6 +22,8 @@ import java.util.ArrayList;
 
 public class BarListFragment extends BarFragment implements BarListAdapter.OnBarItemClickedListener {
 
+    private OnBarSelectedListener onBarSelectedListener;
+
     private RecyclerView barListRecyclerView;
     private BarListAdapter adapter;
 
@@ -34,8 +36,6 @@ public class BarListFragment extends BarFragment implements BarListAdapter.OnBar
     public interface OnBarSelectedListener {
         void onBarSelectedListener(String barId);
     }
-
-    private OnBarSelectedListener onBarSelectedListener;
 
     @Override
     public void onAttach(Context context) {

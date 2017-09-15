@@ -21,7 +21,6 @@ public class BarLocationManager implements GoogleApiClient.OnConnectionFailedLis
         GoogleApiClient.ConnectionCallbacks,
         LocationListener {
 
-    private static final String TAG = BarLocationManager.class.getSimpleName();
     private final Context app;
 
     private Location location;
@@ -60,7 +59,6 @@ public class BarLocationManager implements GoogleApiClient.OnConnectionFailedLis
         if (connectionListener != null) {
             connectionListener.onConnectionFailed(connectionResult);
         }
-
     }
 
     @Override
@@ -68,7 +66,6 @@ public class BarLocationManager implements GoogleApiClient.OnConnectionFailedLis
         if (connectionListener != null) {
             connectionListener.onConnected(bundle);
         }
-
     }
 
     @Override

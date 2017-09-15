@@ -27,14 +27,6 @@ class BarListAdapter extends RecyclerView.Adapter<BarListAdapter.BarViewHolder> 
 
     private OnBarItemClickedListener clickedListener;
 
-    public void setClickedListener(OnBarItemClickedListener clickedListener) {
-        this.clickedListener = clickedListener;
-    }
-
-    public interface OnBarItemClickedListener {
-        void onBarItemClicked(String barId);
-    }
-
     void setBars(ArrayList<Bar> bars, Location newLocation) {
         if (bars != null) {
             if (this.bars == null) {
@@ -61,6 +53,14 @@ class BarListAdapter extends RecyclerView.Adapter<BarListAdapter.BarViewHolder> 
     @Override
     public int getItemCount() {
         return bars.size();
+    }
+
+    void setClickedListener(OnBarItemClickedListener clickedListener) {
+        this.clickedListener = clickedListener;
+    }
+
+    interface OnBarItemClickedListener {
+        void onBarItemClicked(String barId);
     }
 
     class BarViewHolder extends RecyclerView.ViewHolder {

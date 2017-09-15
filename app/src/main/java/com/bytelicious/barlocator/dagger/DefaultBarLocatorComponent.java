@@ -3,7 +3,6 @@ package com.bytelicious.barlocator.dagger;
 import android.content.Context;
 
 import com.bytelicious.barlocator.base.BarLocatorApplication;
-import com.bytelicious.barlocator.managers.BarLocationManager;
 import com.bytelicious.barlocator.networking.API;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -37,12 +36,9 @@ public class DefaultBarLocatorComponent {
         OkHttpClient client = new OkHttpClient.Builder()
                 .retryOnConnectionFailure(true)
                 .connectTimeout(15, TimeUnit.SECONDS)
-                .followRedirects(true)
-                .followSslRedirects(true)
                 .build();
 
         Gson gson = new GsonBuilder()
-                .setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
                 .excludeFieldsWithoutExposeAnnotation()
                 .serializeNulls()
                 .create();

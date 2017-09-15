@@ -13,7 +13,7 @@ public class BarsResponse {
 
     @Expose
     @SerializedName("results")
-    private ArrayList<Bar> bars;
+    private ArrayList<Bar> bars = null;
 
     public ArrayList<Bar> getBars() {
         return bars;

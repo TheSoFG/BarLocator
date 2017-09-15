@@ -38,11 +38,11 @@ public class BarMapFragment extends BarFragment implements OnMapReadyCallback {
     private static final int DEFAULT_ZOOM_LEVEL = 18;
     private String barId;
 
+    private SupportMapFragment mapFragment;
+
     public static BarMapFragment newInstance() {
         return new BarMapFragment();
     }
-
-    private SupportMapFragment mapFragment;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {

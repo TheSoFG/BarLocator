@@ -46,7 +46,7 @@ public class NetworkManager {
                     public void onResponse(@NonNull Call<BarsResponse> call,
                                            @NonNull Response<BarsResponse> response) {
                         if(onBarsReadyListener != null) {
-                            if (response.isSuccessful()) {
+                            if (response.isSuccessful() && response.body() != null) {
                                 onBarsReadyListener.onBarsSuccess(response.body().getBars(),
                                         location);
                             } else {
