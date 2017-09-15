@@ -20,6 +20,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 
+import com.bytelicious.barlocator.base.BarFragment;
 import com.bytelicious.barlocator.dagger.DI;
 import com.bytelicious.barlocator.list.BarListFragment;
 import com.bytelicious.barlocator.managers.BarLocationManager;
@@ -32,7 +33,6 @@ import java.util.ArrayList;
 
 import javax.inject.Inject;
 
-import static com.bytelicious.barlocator.BarPagerAdapter.LIST;
 import static com.bytelicious.barlocator.BarPagerAdapter.MAP;
 import static com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks.CAUSE_NETWORK_LOST;
 import static com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks.CAUSE_SERVICE_DISCONNECTED;
@@ -51,6 +51,8 @@ public class MainActivity extends AppCompatActivity implements BarLocationManage
     NetworkManager networkManager;
     @Inject
     BarLocationManager locationManager;
+    private ArrayList<Bar> bars;
+    private Location location;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -138,7 +140,9 @@ public class MainActivity extends AppCompatActivity implements BarLocationManage
 
     @Override
     public void onBarsSuccess(ArrayList<Bar> bars, Location location) {
-        setNewBars(bars, location);
+        this.bars = bars;
+        this.location = location;
+        deliverResultsToFragment(viewPager.getCurrentItem());
     }
 
     @Override
@@ -194,20 +198,35 @@ public class MainActivity extends AppCompatActivity implements BarLocationManage
                 == PackageManager.PERMISSION_GRANTED;
     }
 
-    private void setNewBars(ArrayList<Bar> bars, Location location) {
-        Fragment f = getSupportFragmentManager().getFragments().get(LIST);
-        // After screen rotation new instance of FragmentPagerAdapter is created.
-        // But the ViewPager restores its state and state of all fragments it contains.
-        // ViewPager doesn't call adapters getView() method.
-        if (f instanceof BarListFragment) {
-            ((BarListFragment) f).setBars(bars, location);
-        }
-    }
-
     private void setupViewPager() {
         viewPager = findViewById(R.id.view_pager);
         BarPagerAdapter barPagerAdapter = new BarPagerAdapter(getSupportFragmentManager());
         viewPager.setAdapter(barPagerAdapter);
+
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+            @Override
+            public void onPageSelected(int position) {
+                deliverResultsToFragment(position);
+            }
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
+    }
+
+    private void deliverResultsToFragment(int position) {
+        // After screen rotation new instance of FragmentPagerAdapter is created.
+        // But the ViewPager restores its state and state of all fragments it contains.
+        // ViewPager doesn't call adapters getView() method.
+        Fragment f = getSupportFragmentManager().getFragments().get(position);
+        if (f instanceof BarFragment) {
+            ((BarFragment) f).setBars(bars, location);
+        }
     }
 
     private void setupToolbar() {

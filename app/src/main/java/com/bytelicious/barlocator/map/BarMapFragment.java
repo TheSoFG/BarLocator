@@ -1,27 +1,31 @@
 package com.bytelicious.barlocator.map;
 
+import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.bytelicious.barlocator.R;
+import com.bytelicious.barlocator.base.BarFragment;
 import com.bytelicious.barlocator.model.Bar;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+
+import java.util.ArrayList;
 
 /**
  * @author ylyubenov
  */
 
-public class BarMapFragment extends Fragment implements OnMapReadyCallback {
+public class BarMapFragment extends BarFragment implements OnMapReadyCallback {
 
     public static final String TITLE = "Bar Map";
     private static final String SELECTED_BAR = "BarMapFragment.bar";
@@ -46,7 +50,8 @@ public class BarMapFragment extends Fragment implements OnMapReadyCallback {
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_bar_map, container, false);
         mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.fragment_map);
         mapFragment.getMapAsync(this);
@@ -79,20 +84,36 @@ public class BarMapFragment extends Fragment implements OnMapReadyCallback {
         moveToBar(bar);
     }
 
-    private void moveToBar(Bar bar) {
+    @Override
+    public void setBars(ArrayList<Bar> bars, Location location) {
+        super.setBars(bars, location);
+
+        resetMarkers(location);
+    }
+
+    private void resetMarkers(Location location) {
         map.clear();
+        LatLngBounds.Builder builder = new LatLngBounds.Builder();
+        for (Bar bar1 : bars) {
+            Marker marker = addMarker(bar1, new LatLng(location.getLatitude(),
+                    location.getLongitude()));
+            builder.include(marker.getPosition());
+        }
+        map.animateCamera(CameraUpdateFactory.newLatLngZoom(builder.build().getCenter(),
+                DEFAULT_ZOOM_LEVEL));
+    }
+
+    private void moveToBar(Bar bar) {
         LatLng barPosition = new LatLng(bar.getGeometry().getLocation().getLat(),
                 bar.getGeometry().getLocation().getLng());
-        addMarker(bar, barPosition);
         map.animateCamera(CameraUpdateFactory.newLatLngZoom(barPosition, DEFAULT_ZOOM_LEVEL));
     }
 
-    private void addMarker(Bar bar, LatLng barPosition) {
-        Marker marker = map.addMarker(new MarkerOptions()
+    private Marker addMarker(Bar bar, LatLng barPosition) {
+        return map.addMarker(new MarkerOptions()
                 .position(barPosition)
                 .title(bar.getName())
                 .snippet(bar.getStreet()));
-        marker.showInfoWindow();
     }
 
 }
