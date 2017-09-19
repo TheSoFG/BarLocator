@@ -24,7 +24,12 @@
         </activity>
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="@string/map_api_key"/>
+            android:value="@string/web_api_key"/>
+        <!--
+         Here the web api key is used since it has to work on all machines (unrestricted key).
+         Nevertheless, the map api key should be used (either through registering all users
+         or using one debug.keystore for every developer).
+        -->
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />

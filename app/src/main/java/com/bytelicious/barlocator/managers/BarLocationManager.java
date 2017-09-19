@@ -95,7 +95,7 @@ public class BarLocationManager implements GoogleApiClient.OnConnectionFailedLis
 
     public void setConnectionListener(ConnectionListener connectionListener) {
         this.connectionListener = connectionListener;
-        if (connectionListener == null) {
+        if (connectionListener == null && isConnected()) {
             LocationServices.FusedLocationApi.removeLocationUpdates(googleApiClient, this);
         }
     }
